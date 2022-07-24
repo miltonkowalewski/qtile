@@ -24,10 +24,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from colors.qtile_palette import QtilePalette, fallout_palette
 from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+from components import GroupBox
 
 mod = "mod4"
 terminal = guess_terminal()
@@ -88,7 +90,7 @@ for i in groups:
                 lazy.group[i.name].toscreen(),
                 desc="Switch to group {}".format(i.name),
             ),
-            # mod1 + shift + letter of group = switch to & move focused window to group
+            # mod1 + shift + letter ofi.name group = switch to & move focused window to group
             Key(
                 [mod, "shift"],
                 i.name,
@@ -101,10 +103,22 @@ for i in groups:
             #     desc="move focused window to group {}".format(i.name)),
         ]
     )
+    
+qtile_palette = QtilePalette(**fallout_palette)
+
+def init_layout_theme():
+    return {
+            "margin": 0,
+            "border_width": 4,
+            "border_focus": '#5e81ac',
+            "border_normal": '#4c566a'
+            }
+
+layout_theme = init_layout_theme()
 
 layouts = [
     layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
-    layout.Max(),
+    layout.Max(**layout_theme),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
@@ -130,7 +144,7 @@ screens = [
         bottom=bar.Bar(
             [
                 widget.CurrentLayout(),
-                widget.GroupBox(),
+                widget.GroupBox(**GroupBox(qtile_palette).run()),
                 widget.Prompt(),
                 widget.WindowName(),
                 widget.Chord(
