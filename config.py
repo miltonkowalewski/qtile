@@ -24,12 +24,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from colors.qtile_palette import QtilePalette, fallout_palette
-from libqtile import bar, layout, widget
+import os
+
+from libqtile import bar, layout, qtile, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-from components import GroupBox
+
+from colors.qtile_palette import QtilePalette, default_palette, fallout_palette
+from components import BarStyle, CurrentLayoutStyle, GroupBoxStyle
 
 mod = "mod4"
 terminal = guess_terminal()
@@ -37,18 +40,33 @@ terminal = guess_terminal()
 keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
-    # Switch between windows
+
+    ### The essentials
+    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    # Key([mod], "space", lazy.spawncmd(), desc="Spawn a command using a prompt widget"), ### Original
+    Key([mod], "space", lazy.spawn("rofi -show run"), desc="Spawn a command using a prompt widget"),
+    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
+    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod, "control"], "r", lazy.restart()),
+
+    ### Switch focus to specific monitor (out of three)
+    Key([mod], "w", lazy.to_screen(0), desc='Keyboard focus to monitor 1'),
+    Key([mod], "e", lazy.to_screen(1), desc='Keyboard focus to monitor 2'),
+
+    ### Window controls
     Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "Down", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "Up", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
+    Key([mod, "shift"], "space", lazy.layout.next(), desc="Move window focus to other window"),
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
     Key([mod, "shift"], "Left", lazy.layout.shuffle_left(), desc="Move window to the left"),
     Key([mod, "shift"], "Right", lazy.layout.shuffle_right(), desc="Move window to the right"),
-    Key([mod, "shift"], "Down", lazy.layout.shuffle_down(), desc="Move window down"),
-    Key([mod, "shift"], "Up", lazy.layout.shuffle_up(), desc="Move window up"),
+    Key([mod, "shift"], "Down", lazy.layout.shuffle_down(), lazy.layout.section_down(), desc="Move window down"),
+    Key([mod, "shift"], "Up", lazy.layout.shuffle_up(), lazy.layout.section_up(), desc="Move window up"),
     # Grow windows. If current window is on the edge of screen and direction
     # will be to screen edge - window would shrink.
     Key([mod, "control"], "Left", lazy.layout.grow_left(), desc="Grow window to the left"),
@@ -56,29 +74,49 @@ keys = [
     Key([mod, "control"], "Down", lazy.layout.grow_down(), desc="Grow window down"),
     Key([mod, "control"], "Up", lazy.layout.grow_up(), desc="Grow window up"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-    # Toggle between split and unsplit sides of stack.
-    # Split = all windows displayed
-    # Unsplit = 1 window displayed, like Max layout, but still with
-    # multiple stack panes
-    Key(
-        [mod, "shift"],
-        "Return",
-        lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack",
-    ),
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
-    # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
-    
-    Key([mod], "c", lazy.spawn("/usr/bin/code"), desc="Launch VScode"),
+
+    #Monad
+    Key([mod], "g", lazy.layout.grow()),
+    Key([mod], "m", lazy.layout.shrink()),
+
+    Key([mod, "shift"], "f", lazy.window.toggle_floating(), desc='toggle floating'),
+    Key([mod], "f", lazy.window.toggle_fullscreen()),
+
+    ### Stack controls
+    Key([mod, "shift"], "Return", lazy.layout.toggle_split(), desc="Toggle between split and unsplit sides of stack"),
 
 ]
 
+def window_to_previous_screen(qtile, switch_group=False, switch_screen=False):
+    i = qtile.screens.index(qtile.current_screen)
+    if i != 0:
+        group = qtile.screens[i - 1].group.name
+        qtile.current_window.togroup(group, switch_group=switch_group)
+        if switch_screen == True:
+            qtile.cmd_to_screen(i - 1)
+
+def window_to_next_screen(qtile, switch_group=False, switch_screen=False):
+    i = qtile.screens.index(qtile.current_screen)
+    if i + 1 != len(qtile.screens):
+        group = qtile.screens[i + 1].group.name
+        qtile.current_window.togroup(group, switch_group=switch_group)
+        if switch_screen == True:
+            qtile.cmd_to_screen(i + 1)
+
+keys.extend([
+    Key([mod,"control"],"Right",  lazy.function(window_to_next_screen, switch_screen=True)),
+    Key([mod,"control"],"Left", lazy.function(window_to_previous_screen, switch_screen=True)),
+])
+
+if os.path.isdir("hidden_modules"):
+    from hidden_modules.keybinds import keybinds
+    keys.extend(keybinds(mod))
+
 groups = [Group(i) for i in "123456789"]
+
+def focused_window(qtile, group_name):
+    group = qtile.groups_map.get(group_name)
+    group.cmd_toscreen()
 
 for i in groups:
     keys.extend(
@@ -87,64 +125,90 @@ for i in groups:
             Key(
                 [mod],
                 i.name,
-                lazy.group[i.name].toscreen(),
+                lazy.function(focused_window, group_name=i.name),
                 desc="Switch to group {}".format(i.name),
             ),
-            # mod1 + shift + letter ofi.name group = switch to & move focused window to group
+            # mod1 + letter of group = switch focused window to group
             Key(
                 [mod, "shift"],
                 i.name,
+                lazy.window.togroup(i.name, switch_group=False),
+                desc="Move focused window to group {}".format(i.name),
+            ),
+            # mod1 + shift + letter ofi.name group = switch to & move focused window to group
+            Key(
+                [mod, "control"],
+                i.name,
                 lazy.window.togroup(i.name, switch_group=True),
                 desc="Switch to & move focused window to group {}".format(i.name),
-            ),
-            # Or, use below if you prefer not to switch to that group.
-            # # mod1 + shift + letter of group = move focused window to group
-            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-            #     desc="move focused window to group {}".format(i.name)),
+            )
         ]
     )
-    
+
+# qtile_palette = QtilePalette(**default_palette)    
 qtile_palette = QtilePalette(**fallout_palette)
 
-def init_layout_theme():
-    return {
-            "margin": 0,
-            "border_width": 4,
-            "border_focus": '#5e81ac',
-            "border_normal": '#4c566a'
-            }
-
-layout_theme = init_layout_theme()
-
 layouts = [
-    layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
-    layout.Max(**layout_theme),
+    layout.MonadTall(
+        border_focus=qtile_palette.active, # "Border colour(s) for the focused window.",
+        border_normal="#000000", # "Border colour(s) for un-focused windows.",
+        border_width=2, # "Border width.",
+        single_border_width=None, # "Border width for single window",
+        single_margin=None, # "Margin size for single window",
+        margin=0, # "Margin of the layout",
+        ratio=0.5, # "The percent of the screen-space the master pane should occupy " "by default.",
+        min_ratio=0.25, # "The percent of the screen-space the master pane should occupy " "at minimum.",
+        max_ratio=0.75, # "The percent of the screen-space the master pane should occupy " "at maximum.",
+        min_secondary_size=85, # "minimum size in pixel for a secondary pane window ",
+        change_ratio=0.05, # "Resize ratio",
+        change_size=20, # "Resize change in pixels",
+        new_client_position="after_current",
+            # "Place new windows: "
+            # " after_current - after the active window."
+            # " before_current - before the active window,"
+            # " top - at the top of the stack,"
+            # " bottom - at the bottom of the stack,",
+    ),
+    layout.TreeTab(
+        font = "Ubuntu",
+        fontsize = 10,
+        sections = ["Default"],
+        section_fontsize = 8,
+        border_width = 2,
+        # bg_color = qtile_palette.this_current_screen_border,
+        active_bg = qtile_palette.active,
+        # active_fg = "000000",
+        inactive_bg = qtile_palette.inactive,
+        # inactive_fg = ,
+        padding_left = 0,
+        padding_x = 0,
+        padding_y = 5,
+        section_top = 10,
+        section_bottom = 20,
+        level_shift = 8,
+        vspace = 3,
+        panel_width = 250
+
+    ),
+    # layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=5, margin=10),
+    # layout.Max(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=5, margin=10),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
+    # layout.RatioTile(),
     # layout.Bsp(),
     # layout.Matrix(),
-    # layout.MonadTall(),
     # layout.MonadWide(),
-    # layout.RatioTile(),
     # layout.Tile(),
-    # layout.TreeTab(),
     # layout.VerticalTile(),
     # layout.Zoomy(),
 ]
-
-widget_defaults = dict(
-    font="sans",
-    fontsize=12,
-    padding=3,
-)
-extension_defaults = widget_defaults.copy()
 
 screens = [
     Screen(
         bottom=bar.Bar(
             [
-                widget.CurrentLayout(),
-                widget.GroupBox(**GroupBox(qtile_palette).run()),
+                widget.CurrentLayout(**CurrentLayoutStyle(qtile_palette).stylize()),
+                widget.GroupBox(**GroupBoxStyle(qtile_palette).stylize()),
                 widget.Prompt(),
                 widget.WindowName(),
                 widget.Chord(
@@ -153,14 +217,24 @@ screens = [
                     },
                     name_transform=lambda name: name.upper(),
                 ),
-                widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
+                widget.Net(
+                    interface = "wlx503eaaa122f1",
+                    format = 'Net: {down} ↓↑ {up}',
+                    foreground = qtile_palette.active,
+                    padding = 5
+                ),
+                widget.Memory(
+                    foreground = qtile_palette.active,
+                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e htop')},
+                    fmt = 'Mem: {}',
+                    padding = 5
+                ),
                 widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
+                widget.Clock(format = "%A, %B %d - %H:%M "),
                 widget.QuickExit(),
             ],
             24,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+            **BarStyle(qtile_palette).stylize()
         ),
     ),
 ]

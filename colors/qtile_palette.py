@@ -1,6 +1,7 @@
 #Colors 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class QtilePalette:
     
@@ -12,4 +13,10 @@ fallout_palette = {
     "inactive": "#073605",
     "active": "#199515",
     "this_current_screen_border": "#199515"
+}
+
+default_palette = {
+    "inactive": "#e5e9f0",
+    "active": "#b48ead",
+    "this_current_screen_border": "#95eb8b"
 }
