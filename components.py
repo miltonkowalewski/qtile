@@ -36,7 +36,7 @@ class BarStyle:
         return {
             "border_width": [2]*4,  # Draw top and bottom borders
             "border_color": [self.palette.this_current_screen_border]*4,
-            "margin": 10,
+            "margin": 5,
         }
 
 @dataclass
