@@ -17,7 +17,7 @@ class GroupBoxStyle:
             "disable_drag": True,
             "font": 'Ubuntu Nerd Font',
             "fontsize": 14,
-            "hide_unused": False,
+            "hide_unused": True,
             "highlight_method": 'line',
             "margin_x": 0,
             "margin_y": 4,
@@ -32,12 +32,12 @@ class BarStyle:
 
     palette: QtilePalette = field(default=QtilePalette())
 
-    def stylize(self):
-        return {
+    def stylize(self, **kwargs):
+        return { **{
             "border_width": [2]*4,  # Draw top and bottom borders
             "border_color": [self.palette.this_current_screen_border]*4,
-            "margin": 5,
-        }
+            "margin": [5,0,0,0],
+        }, **kwargs }
 
 @dataclass
 class CurrentLayoutStyle:

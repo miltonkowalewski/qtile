@@ -9,12 +9,21 @@ qtile_palette = QtilePalette(**fallout_palette)
 
 def w_widget_box(widgets: list):
     return widget.WidgetBox(widgets=widgets)
-def w_text_box(text):
-    return widget.TextBox(text)
+
+def w_text_box(**kwargs):
+    return widget.TextBox(**kwargs)
+
+def w_group_box(**kwargs):
+    return widget.GroupBox(**{**GroupBoxStyle(qtile_palette).stylize(), **kwargs})
+
+def w_agroup_box(**kwargs):
+    return widget.AGroupBox(**kwargs)
+
+def w_window_name(**kwargs):
+    return widget.WindowName(**{**{"foreground": "70ff70"}, **kwargs})
+
 w_layout = widget.CurrentLayout(**CurrentLayoutStyle(qtile_palette).stylize())
-w_group_box = widget.GroupBox(**GroupBoxStyle(qtile_palette).stylize())
 w_prompt = widget.Prompt()
-w_window_name = widget.WindowName(foreground = "70ff70")
 w_chord = widget.Chord(
     chords_colors={
         "launch": ("#ff0000", "#ffffff"),
@@ -37,9 +46,10 @@ w_memory = widget.Memory(
 w_memory_graph = widget.MemoryGraph(graph_color="70ff70", fill_color=qtile_palette.active, border_color=qtile_palette.active)
 w_cpu_graph = widget.CPUGraph(graph_color="70ff70", fill_color=qtile_palette.active, border_color=qtile_palette.active)
 w_volume = widget.Volume(foreground = "70ff70", emoji=True)
-w_notify = widget.Notify(action=False)
+w_notify = widget.Notify()
 w_pomodoro = widget.Pomodoro()
 w_check_updates = widget.CheckUpdates()
 w_systray = widget.Systray()
 w_clock = widget.Clock(format = "%A, %B %d, %Y - %H:%M ", foreground = "70ff70")
 w_quick_exit = widget.QuickExit(foreground = "70ff70")
+w_spacer = widget.Spacer()

@@ -7,3 +7,4 @@ qtile
 background*
 start.sh
 notification.sh
+qtile-extras

@@ -24,13 +24,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from libqtile import layout
+import os
+import subprocess
+
+from libqtile import hook, layout
 from libqtile.config import Click, Drag, Match
 from libqtile.lazy import lazy
 
 from keys import *
 from layouts import *
 from screens import *
+
+
+@hook.subscribe.startup_once
+async def autostart():
+    home = os.path.expanduser('~/.config/qtile/autostart.sh')
+    subprocess.Popen([home])
 
 mod = "mod4"
 
