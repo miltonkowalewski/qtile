@@ -10,7 +10,6 @@ layouts = [
         border_width=2,
         margin=10
     ),
-    
     layout.MonadWide(
         align=0,
         border_focus=qtile_palette.active, # "Border colour(s) for the focused window.",
@@ -32,7 +31,6 @@ layouts = [
         single_border_width=None, # "Border width for single window",
         single_margin=None, # "Margin size for single window",
     ),
-    
     layout.MonadTall(
         border_focus=qtile_palette.active, # "Border colour(s) for the focused window.",
         border_normal="#000000", # "Border colour(s) for un-focused windows.",
@@ -53,8 +51,6 @@ layouts = [
             # " top - at the top of the stack,"
             # " bottom - at the bottom of the stack,",
     ),
-    
-
     # layout.MonadThreeCol(
     #     align=layout.MonadTall._left,
     #     border_focus=qtile_palette.active, # "Border colour(s) for the focused window.",
@@ -77,8 +73,6 @@ layouts = [
     #     single_border_width=None, # "Border width for single window",
     #     single_margin=None, # "Margin size for single window",
     # ),
-
-
     # layout.TreeTab(
     #     active_bg=qtile_palette.active, # Background color of active tab
     #     active_fg='ffffff', # Foreground color of active tab
@@ -109,7 +103,6 @@ layouts = [
     #     urgent_fg='ffffff', # Foreground color of urgent tab
     #     vspace=2, # Space between tabs
     # ),
-    
     # layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=5, margin=10),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),

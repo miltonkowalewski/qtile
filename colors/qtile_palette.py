@@ -11,7 +11,7 @@ class QtilePalette:
 
 fallout_palette = {
     "inactive": "#073605",
-    "active": "#199515",
+    "active": "#0fff08",
     "this_current_screen_border": "#199515"
 }
 

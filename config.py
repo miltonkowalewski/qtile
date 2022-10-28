@@ -31,17 +31,16 @@ from libqtile import hook, layout
 from libqtile.config import Click, Drag, Match
 from libqtile.lazy import lazy
 
-from keys import *
-from layouts import *
-from screens import *
-
+from keys import *      # Keybinds
+from layouts import *   # Screen division and distribuition 
+from screens import *   # Monitors
 
 @hook.subscribe.startup_once
 async def autostart():
-    home = os.path.expanduser('~/.config/qtile/autostart.sh')
+    home = os.path.expanduser('~/.config/qtile/autostart.sh') # Load when start qtile 
     subprocess.Popen([home])
 
-mod = "mod4"
+mod = "mod4" # Key: [WIN]
 
 # Drag floating layouts.
 mouse = [

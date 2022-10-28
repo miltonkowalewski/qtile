@@ -1,10 +1,11 @@
 .devcontainer
 __pycache__
 hidden_modules
-.venv
+.venv*
 .vscode
 qtile
 background*
 start.sh
 notification.sh
 qtile-extras
+
