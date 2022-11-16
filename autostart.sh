@@ -1,11 +1,6 @@
 #!/bin/sh
 
-compton &
 nm-applet --indicator &
-pnmixer &
-superproductivity &
-numlockx on &
-flameshot &
-synology-drive -minimized &
-/usr/bin/variety &
-feh --randomize --bg-fill ~/Pictures/wallpapers/* &
+mkdir -p ~/wallpapers &
+type -p feh >/dev/null || sudo apt install feh -y && cp -R /usr/share/backgrounds/* ~/wallpapers &
+feh --randomize --bg-fill ~/wallpapers/* &
