@@ -94,15 +94,16 @@ keys = [
 #     ("9", " 9|Term")
 # ]]
 groups = [
-    Group(name="2", label=" 2|Web"),
-    Group(name="1", label=" 1|Code"),
+    Group(name="1", label=" 1|Web", matches=[Match(wm_class=["firefox"])]),
+    Group(name="2", label=" 2|Code", matches=[Match(wm_class=["code"])]),
     Group(name="3", label="3"),
     Group(name="4", label="4"),
     Group(name="5", label="5"),
     Group(name="6", label="6"),
-    Group(name="7", label=" 7|Slack"),
-    Group(name="8", label=" 8|Disc"),
-    Group(name="9", label=" 9|Term")
+    Group(name="7", label=" 7|Slack", matches=[Match(wm_class=["slack"])]),
+    Group(name="8", label=" 8|Disc", matches=[Match(wm_class=["discord"])]),
+    Group(name="9", label="9"),
+    Group(name="0", label=" 0|Term", matches=[Match(wm_class=["gnome-teminal-server"])])
 ]
 # "","","","","","","","",""
 
@@ -131,14 +132,14 @@ for i in groups:
     )
 
 layouts = [
-    layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
+    # layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
+    layout.MonadTall(),
+    layout.MonadWide(),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
-    # layout.MonadTall(),
-    # layout.MonadWide(),
     # layout.RatioTile(),
     # layout.Tile(),
     # layout.TreeTab(),
