@@ -81,32 +81,18 @@ keys = [
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
 ]
 
-# groups = [Group(i) for i in "123456789"]
-# groups = [Group(name=k, label=label) for k, label in [
-#     ("2", " 2|Web"),
-#     ("1", " 1|Code"),
-#     ("3", "3"),
-#     ("4", "4"),
-#     ("5", "5"),
-#     ("6", "6"),
-#     ("7", " 7|Slack"),
-#     ("8", " 8|Disc"),
-#     ("9", " 9|Term")
-# ]]
 groups = [
-    Group(name="1", label=" 1|Web", matches=[Match(wm_class=["firefox"])]),
+    Group(name="1", label=" 1|Web", matches=[Match(wm_class=["firefox", "brave-browser", "google-chrome"])]),
     Group(name="2", label=" 2|Code", matches=[Match(wm_class=["code"])]),
-    Group(name="3", label="3"),
-    Group(name="4", label="4"),
+    Group(name="3", label=" 3|Data", matches=[Match(vm_class=["dbeaver"])]),
+    Group(name="4", label="飯4|HTTP", matches=[Match(vm_class=["insomnia"])]),
     Group(name="5", label="5"),
     Group(name="6", label="6"),
     Group(name="7", label=" 7|Slack", matches=[Match(wm_class=["slack"])]),
     Group(name="8", label=" 8|Disc", matches=[Match(wm_class=["discord"])]),
     Group(name="9", label="9"),
-    Group(name="0", label=" 0|Term", matches=[Match(wm_class=["gnome-teminal-server"])])
+    Group(name="0", label=" 0|Term", matches=[Match(wm_class=["gnome-teminal-server", "alacritty"])])
 ]
-# "","","","","","","","",""
-
 for i in groups:
     keys.extend(
         [
