@@ -84,8 +84,8 @@ keys = [
 groups = [
     Group(name="1", label=" 1|Web", matches=[Match(wm_class=["firefox", "brave-browser", "google-chrome"])]),
     Group(name="2", label=" 2|Code", matches=[Match(wm_class=["code"])]),
-    Group(name="3", label=" 3|Data", matches=[Match(vm_class=["dbeaver"])]),
-    Group(name="4", label="飯4|HTTP", matches=[Match(vm_class=["insomnia"])]),
+    Group(name="3", label=" 3|Data", matches=[Match(wm_class=["dbeaver"])]),
+    Group(name="4", label="飯4|HTTP", matches=[Match(wm_class=["insomnia"])]),
     Group(name="5", label="5"),
     Group(name="6", label="6"),
     Group(name="7", label=" 7|Slack", matches=[Match(wm_class=["slack"])]),
